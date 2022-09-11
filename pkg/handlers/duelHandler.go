@@ -50,6 +50,29 @@ func NewDuelHandler(bot *tgbotapi.BotAPI) types.Handler[tgbotapi.Update] {
 				},
 			})
 
+			if first.User.ID == second.User.ID {
+				msg := tgbotapi.NewMessage(update.Message.Chat.ID, "You can't duel with yourself!")
+				msg.ReplyToMessageID = update.Message.MessageID
+
+				if _, err := bot.Send(msg); err != nil {
+					panic(err)
+				}
+			}
+
+			me, err := bot.GetMe()
+			if err != nil {
+				panic(err)
+			}
+
+			if me.ID == second.User.ID {
+				msg := tgbotapi.NewMessage(update.Message.Chat.ID, "You can't duel with bot!")
+				msg.ReplyToMessageID = update.Message.MessageID
+
+				if _, err := bot.Send(msg); err != nil {
+					panic(err)
+				}
+			}
+
 			firstName := strings.Join([]string{first.User.FirstName, first.User.LastName}, " ")
 			secondName := strings.Join([]string{second.User.FirstName, second.User.LastName}, " ")
 
