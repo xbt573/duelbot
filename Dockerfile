@@ -11,6 +11,6 @@ RUN go build
 FROM scratch AS base
 
 WORKDIR /
-COPY --from=build /app/duelbot /duelbot
+COPY --from=build /app/duelbot /
 
 CMD /duelbot
