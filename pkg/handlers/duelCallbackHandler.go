@@ -117,7 +117,7 @@ func NewDuelCallbackHandler(bot *tgbotapi.BotAPI) types.Handler[tgbotapi.Update]
 				panic(err)
 			}
 
-			if adminIsSet && update.CallbackQuery.Message.From.UserName == "pr2ch" {
+			if adminIsSet && update.CallbackQuery.Message.Chat.UserName == "pr2ch" {
 				var loser string
 
 				if loserUser.User.UserName != "" {
