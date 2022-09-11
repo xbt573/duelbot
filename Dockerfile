@@ -8,9 +8,9 @@ RUN go mod download && go mod verify
 COPY . .
 RUN go build
 
-FROM scratch AS base
+FROM busybox
 
 WORKDIR /
 COPY --from=build /app/duelbot .
 
-CMD ["./duelbot"]
+CMD /duelbot
