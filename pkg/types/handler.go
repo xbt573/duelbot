@@ -1,7 +1,7 @@
 package types
 
-type Handler[T any] struct{
-	next *Handler[T]
+type Handler[T any] struct {
+	next    *Handler[T]
 	Handler func(arg T) bool
 }
 

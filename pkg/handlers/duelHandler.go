@@ -50,8 +50,8 @@ func NewDuelHandler(bot *tgbotapi.BotAPI) types.Handler[tgbotapi.Update] {
 				},
 			})
 
-			firstName := strings.Join([]string{ first.User.FirstName, first.User.LastName }, " ")
-			secondName := strings.Join([]string{ second.User.FirstName, second.User.LastName }, " ")
+			firstName := strings.Join([]string{first.User.FirstName, first.User.LastName}, " ")
+			secondName := strings.Join([]string{second.User.FirstName, second.User.LastName}, " ")
 
 			messageText := fmt.Sprintf("🤠 %v challenges 🤠 %v to a duel! 🔫", firstName, secondName)
 			callbackData := fmt.Sprintf("#duelbot:%v-%v", first.User.ID, second.User.ID)

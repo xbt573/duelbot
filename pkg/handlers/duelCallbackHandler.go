@@ -3,14 +3,14 @@ package handlers
 import (
 	"fmt"
 	"math/rand"
+	"os"
 	"strconv"
 	"strings"
 	"time"
-	"os"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
-	"github.com/xbt573/duelbot/pkg/types"
 	"github.com/xbt573/duelbot/pkg/phrases"
+	"github.com/xbt573/duelbot/pkg/types"
 )
 
 var (
@@ -88,15 +88,15 @@ func NewDuelCallbackHandler(bot *tgbotapi.BotAPI) types.Handler[tgbotapi.Update]
 				return false
 			}
 
-			winnerName := strings.Join([]string{ winnerUser.User.FirstName, winnerUser.User.LastName }, " ")
-			loserName := strings.Join([]string{ loserUser.User.FirstName, loserUser.User.LastName }, " ")
+			winnerName := strings.Join([]string{winnerUser.User.FirstName, winnerUser.User.LastName}, " ")
+			loserName := strings.Join([]string{loserUser.User.FirstName, loserUser.User.LastName}, " ")
 
 			messageText := fmt.Sprintf("🤠 %v wins! 🤠 %v loses! ⚔️", winnerName, loserName)
 
 			edit := tgbotapi.NewEditMessageTextAndMarkup(
 				update.CallbackQuery.Message.Chat.ID,
 				update.CallbackQuery.Message.MessageID,
-				"⚔️" + phrases.Random(),
+				"⚔️"+phrases.Random(),
 				tgbotapi.NewInlineKeyboardMarkup([]tgbotapi.InlineKeyboardButton{}),
 			)
 
@@ -104,7 +104,7 @@ func NewDuelCallbackHandler(bot *tgbotapi.BotAPI) types.Handler[tgbotapi.Update]
 				panic(err)
 			}
 
-			time.Sleep(time.Duration(int64(time.Second) * int64(1 + rand.Int63n(3))))
+			time.Sleep(time.Duration(int64(time.Second) * int64(1+rand.Int63n(3))))
 
 			edit = tgbotapi.NewEditMessageTextAndMarkup(
 				update.CallbackQuery.Message.Chat.ID,
