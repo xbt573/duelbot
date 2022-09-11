@@ -57,6 +57,8 @@ func NewDuelHandler(bot *tgbotapi.BotAPI) types.Handler[tgbotapi.Update] {
 				if _, err := bot.Send(msg); err != nil {
 					panic(err)
 				}
+
+				return true
 			}
 
 			me, err := bot.GetMe()
@@ -71,6 +73,8 @@ func NewDuelHandler(bot *tgbotapi.BotAPI) types.Handler[tgbotapi.Update] {
 				if _, err := bot.Send(msg); err != nil {
 					panic(err)
 				}
+
+				return true
 			}
 
 			firstName := strings.Join([]string{first.User.FirstName, first.User.LastName}, " ")
