@@ -13,4 +13,4 @@ FROM scratch AS base
 WORKDIR /
 COPY --from=build /app/duelbot /
 
-CMD /duelbot
+CMD ["duelbot"]
