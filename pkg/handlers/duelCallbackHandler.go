@@ -10,6 +10,7 @@ import (
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"github.com/xbt573/duelbot/pkg/types"
+	"github.com/xbt573/duelbot/pkg/phrases"
 )
 
 var (
@@ -95,7 +96,7 @@ func NewDuelCallbackHandler(bot *tgbotapi.BotAPI) types.Handler[tgbotapi.Update]
 			edit := tgbotapi.NewEditMessageTextAndMarkup(
 				update.CallbackQuery.Message.Chat.ID,
 				update.CallbackQuery.Message.MessageID,
-				"⚔️ Processing duel...",
+				"⚔️" + phrases.Random(),
 				tgbotapi.NewInlineKeyboardMarkup([]tgbotapi.InlineKeyboardButton{}),
 			)
 
@@ -103,7 +104,7 @@ func NewDuelCallbackHandler(bot *tgbotapi.BotAPI) types.Handler[tgbotapi.Update]
 				panic(err)
 			}
 
-			time.Sleep(time.Duration(int64(time.Second) * int64(rand.Int63n(4))))
+			time.Sleep(time.Duration(int64(time.Second) * int64(1 + rand.Int63n(3))))
 
 			edit = tgbotapi.NewEditMessageTextAndMarkup(
 				update.CallbackQuery.Message.Chat.ID,
