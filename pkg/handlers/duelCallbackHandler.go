@@ -43,7 +43,7 @@ func NewDuelCallbackHandler(bot *tgbotapi.BotAPI) types.Handler[tgbotapi.Update]
 			}
 
 			if secondId != update.CallbackQuery.From.ID {
-				response := tgbotapi.NewCallbackWithAlert(update.CallbackQuery.ID, "Access denied!")
+				response := tgbotapi.NewCallbackWithAlert(update.CallbackQuery.ID, "❌ Access denied!")
 				if _, err := bot.Request(response); err != nil {
 					panic(err)
 				}
@@ -90,9 +90,22 @@ func NewDuelCallbackHandler(bot *tgbotapi.BotAPI) types.Handler[tgbotapi.Update]
 			winnerName := strings.Join([]string{ winnerUser.User.FirstName, winnerUser.User.LastName }, " ")
 			loserName := strings.Join([]string{ loserUser.User.FirstName, loserUser.User.LastName }, " ")
 
-			messageText := fmt.Sprintf("%v wins! %v loses!", winnerName, loserName)
+			messageText := fmt.Sprintf("🤠 %v wins! 🤠 %v loses! ⚔️", winnerName, loserName)
 
 			edit := tgbotapi.NewEditMessageTextAndMarkup(
+				update.CallbackQuery.Message.Chat.ID,
+				update.CallbackQuery.Message.MessageID,
+				"⚔️ Processing duel...",
+				tgbotapi.NewInlineKeyboardMarkup([]tgbotapi.InlineKeyboardButton{}),
+			)
+
+			if _, err := bot.Request(edit); err != nil {
+				panic(err)
+			}
+
+			time.Sleep(time.Duration(int64(time.Second) * int64(rand.Int63n(4))))
+
+			edit = tgbotapi.NewEditMessageTextAndMarkup(
 				update.CallbackQuery.Message.Chat.ID,
 				update.CallbackQuery.Message.MessageID,
 				messageText,
