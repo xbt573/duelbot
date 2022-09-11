@@ -8,7 +8,7 @@ RUN go mod download && go mod verify
 COPY . .
 RUN go build
 
-FROM busybox
+FROM busybox:glibc
 
 WORKDIR /
 COPY --from=build /app/duelbot .
