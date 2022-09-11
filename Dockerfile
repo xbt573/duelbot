@@ -8,7 +8,9 @@ RUN go mod download && go mod verify
 COPY . .
 RUN go build
 
-FROM busybox:glibc
+FROM alpine:latest
+
+RUN apk add libc6-compat
 
 WORKDIR /
 COPY --from=build /app/duelbot .
