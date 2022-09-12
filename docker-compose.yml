@@ -6,6 +6,7 @@ services:
 
         environment:
             - BOT_TOKEN
+            - BOT_MODE
             - ADMIN_NAME
 
         restart: always
