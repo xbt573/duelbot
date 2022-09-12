@@ -40,7 +40,7 @@ func DuelHandler(ctx telebot.Context) error {
 	)
 
 	return ctx.Reply(messageText, &telebot.SendOptions{
-		ReplyTo: ctx.Message().ReplyTo,
+		ReplyTo:     ctx.Message().ReplyTo,
 		ReplyMarkup: markup,
 	})
 }

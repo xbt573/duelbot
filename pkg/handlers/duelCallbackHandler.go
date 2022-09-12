@@ -63,7 +63,7 @@ func DuelCallbackHandler(ctx telebot.Context) error {
 
 	messageText := fmt.Sprintf("🤠 %v wins! 🤠 %v loses! ⚔️", winnerName, loserName)
 
-	_, err = ctx.Bot().Edit(ctx.Callback(), "⚔️" + phrases.Random(), &telebot.ReplyMarkup{})
+	_, err = ctx.Bot().Edit(ctx.Callback(), "⚔️"+phrases.Random(), &telebot.ReplyMarkup{})
 	if err != nil {
 		return ctx.Respond()
 	}
@@ -75,8 +75,19 @@ func DuelCallbackHandler(ctx telebot.Context) error {
 		return ctx.Respond()
 	}
 
-	admin, adminIsSet := os.LookupEnv("ADMIN_NAME")
-	if adminIsSet {
+	mode, modeIsSet := os.LookupEnv("BOT_MODE")
+	if !modeIsSet {
+		return ctx.Respond()
+	}
+
+	switch mode {
+	case "PING":
+		admin, adminIsSet := os.LookupEnv("ADMIN_NAME")
+
+		if !adminIsSet {
+			return ctx.Respond()
+		}
+
 		var loser string
 
 		if loserUser.User.Username != "" {
@@ -85,9 +96,25 @@ func DuelCallbackHandler(ctx telebot.Context) error {
 			loser = loserName
 		}
 
-		err := ctx.Send(
-			fmt.Sprintf("%v, забань этого мудилу (%v) :D", admin, loser),
-		)
+		err := ctx.Send(fmt.Sprintf("%v, ban him (%v)! :D", admin, loser))
+		if err != nil {
+			return ctx.Respond()
+		}
+
+	case "ADMIN":
+		me, err := ctx.Bot().ChatMemberOf(ctx.Chat(), ctx.Bot().Me)
+		if err != nil {
+			return ctx.Respond()
+		}
+
+		if !me.CanRestrictMembers {
+			return ctx.Reply("Bot is not an admin. Change mode or give rights to restrict members!")
+		}
+
+		loserUser.RestrictedUntil = int64(time.Minute) * 10
+		loserUser.CanSendMessages = false
+
+		err = ctx.Bot().Restrict(ctx.Chat(), loserUser)
 		if err != nil {
 			return ctx.Respond()
 		}
