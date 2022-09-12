@@ -7,6 +7,7 @@ services:
         environment:
             - BOT_TOKEN
             - BOT_MODE
+            - CHAT_ID
             - ADMIN_NAME
 
         restart: always
