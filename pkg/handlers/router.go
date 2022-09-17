@@ -5,8 +5,8 @@ import (
 	"os"
 	"strconv"
 
-	"gopkg.in/telebot.v3"
 	"github.com/xbt573/duelbot/pkg/middlewares"
+	"gopkg.in/telebot.v3"
 )
 
 func Route(bot *telebot.Bot) {

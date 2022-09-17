@@ -6,7 +6,7 @@ import (
 
 func Whitelist(chatId int64) telebot.MiddlewareFunc {
 	return func(next telebot.HandlerFunc) telebot.HandlerFunc {
-		return func (ctx telebot.Context) error {
+		return func(ctx telebot.Context) error {
 			if ctx.Chat().ID == chatId {
 				return next(ctx)
 			}

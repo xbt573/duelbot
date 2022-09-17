@@ -111,7 +111,7 @@ func DuelCallbackHandler(ctx telebot.Context) error {
 			return ctx.Reply("Bot is not an admin. Change mode or give rights to restrict members!")
 		}
 
-		loserUser.RestrictedUntil = int64(time.Minute) * 10
+		loserUser.RestrictedUntil = time.Now().Add(time.Minute * 10).Unix()
 		loserUser.CanSendMessages = false
 
 		err = ctx.Bot().Restrict(ctx.Chat(), loserUser)
