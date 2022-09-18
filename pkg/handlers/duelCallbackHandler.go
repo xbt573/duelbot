@@ -34,13 +34,13 @@ func DuelCallbackHandler(ctx telebot.Context) error {
 		return ctx.Respond(&telebot.CallbackResponse{Text: "❌ Access denied!"})
 	}
 
-	rand.Seed(time.Now().Unix())
-	randomNum := rand.Intn(101)
+	rand.Seed(time.Now().UnixNano())
+	randomNum := rand.Intn(2)
 
 	var winnerId int64
 	var loserId int64
 
-	if randomNum < 50 {
+	if randomNum == 1 {
 		winnerId = firstId
 		loserId = secondId
 	} else {
