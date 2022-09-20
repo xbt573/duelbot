@@ -14,13 +14,19 @@ func DuelHandler(ctx telebot.Context) error {
 		})
 	}
 
-	if ctx.Message().ReplyTo.Sender == ctx.Sender() {
+	if ctx.Message().ReplyTo.Sender.ID == ctx.Sender().ID {
 		return ctx.Reply("You can't duel yourself!", &telebot.SendOptions{
 			ReplyTo: ctx.Message(),
 		})
 	}
 
-	if ctx.Message().ReplyTo.Sender == ctx.Bot().Me {
+	if ctx.Message().ReplyTo.Sender.ID == ctx.Bot().Me.ID {
+		return ctx.Reply("You can't duel bot!", &telebot.SendOptions{
+			ReplyTo: ctx.Message(),
+		})
+	}
+
+	if ctx.Message().ReplyTo.Sender.IsBot {
 		return ctx.Reply("You can't duel bot!", &telebot.SendOptions{
 			ReplyTo: ctx.Message(),
 		})
