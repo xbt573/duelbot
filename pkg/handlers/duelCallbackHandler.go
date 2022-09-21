@@ -10,6 +10,7 @@ import (
 
 	"github.com/xbt573/duelbot/pkg/phrases"
 	"github.com/xbt573/duelbot/pkg/types"
+	"github.com/xbt573/duelbot/pkg/user"
 	"gopkg.in/telebot.v3"
 )
 
@@ -75,6 +76,24 @@ func DuelCallbackHandler(ctx telebot.Context) error {
 		return ctx.Respond()
 	}
 
+	user.Set(winnerUser.User.ID, user.Get(winnerUser.User.ID)+1)
+	user.Set(loserUser.User.ID, 0)
+
+	var winInRow bool
+
+	winnerScore := user.Get(winnerUser.User.ID)
+	if winnerScore >= 3 {
+		winInRow = true
+		user.Set(winnerUser.User.ID, 0)
+
+		err := ctx.Reply(
+			fmt.Sprintf("Looks like %v win 3 times in a row! Giving him x3 mute!", winnerName),
+		)
+		if err != nil {
+			return ctx.Respond()
+		}
+	}
+
 	mode, modeIsSet := os.LookupEnv("BOT_MODE")
 	if !modeIsSet {
 		return ctx.Respond()
@@ -89,6 +108,7 @@ func DuelCallbackHandler(ctx telebot.Context) error {
 		}
 
 		var loser string
+		var winner string
 
 		if loserUser.User.Username != "" {
 			loser = "@" + loserUser.User.Username
@@ -96,9 +116,24 @@ func DuelCallbackHandler(ctx telebot.Context) error {
 			loser = loserName
 		}
 
-		err := ctx.Send(fmt.Sprintf("%v, ban him (%v)! :D", admin, loser))
+		if winnerUser.User.Username != "" {
+			winner = "@" + winnerUser.User.Username
+		} else {
+			winner = loserName
+		}
+
+		err := ctx.Reply(fmt.Sprintf("%v, mute him (%v)! :D", admin, loser))
 		if err != nil {
 			return ctx.Respond()
+		}
+
+		if winInRow {
+			err := ctx.Reply(
+				fmt.Sprintf("%v, mute him (%v) x3 time! :D", admin, winner),
+			)
+			if err != nil {
+				return ctx.Respond()
+			}
 		}
 
 	case "ADMIN":
@@ -117,6 +152,16 @@ func DuelCallbackHandler(ctx telebot.Context) error {
 		err = ctx.Bot().Restrict(ctx.Chat(), loserUser)
 		if err != nil {
 			return ctx.Respond()
+		}
+
+		if winInRow {
+			winnerUser.RestrictedUntil = time.Now().Add(time.Minute * 30).Unix()
+			winnerUser.CanSendMessages = false
+
+			err := ctx.Bot().Restrict(ctx.Chat(), winnerUser)
+			if err != nil {
+				return ctx.Respond()
+			}
 		}
 	}
 
