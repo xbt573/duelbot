@@ -32,6 +32,17 @@ func DuelHandler(ctx telebot.Context) error {
 		})
 	}
 
+	replyUser, err := ctx.Bot().ChatMemberOf(ctx.Chat(), ctx.Message().ReplyTo.Sender)
+	if err != nil {
+		return err
+	}
+
+	if !replyUser.CanSendMessages && replyUser.RestrictedUntil != 0 {
+		return ctx.Reply("User is already in mute!", &telebot.SendOptions{
+			ReplyTo: ctx.Message(),
+		})
+	}
+
 	firstName := strings.Join([]string{ctx.Sender().FirstName, ctx.Sender().LastName}, " ")
 	secondName := strings.Join([]string{ctx.Message().ReplyTo.Sender.FirstName, ctx.Message().ReplyTo.Sender.LastName}, " ")
 
