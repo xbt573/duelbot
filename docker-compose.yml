@@ -9,5 +9,8 @@ services:
             - BOT_MODE
             - CHAT_ID
             - ADMIN_NAME
+            - APP_ID
+            - APP_HASH
+            - SESSION_FILE
 
         restart: always
