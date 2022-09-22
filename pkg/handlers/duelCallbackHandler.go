@@ -1,12 +1,16 @@
 package handlers
 
 import (
+	"context"
 	"fmt"
 	"math/rand"
 	"os"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/gotd/td/tg"
+	"github.com/xbt573/duelbot/pkg/tdapi"
 
 	"github.com/xbt573/duelbot/pkg/phrases"
 	"github.com/xbt573/duelbot/pkg/types"
@@ -49,22 +53,35 @@ func DuelCallbackHandler(ctx telebot.Context) error {
 		loserId = firstId
 	}
 
-	winnerUser, err := ctx.Bot().ChatMemberOf(ctx.Chat(), &types.IdRecipient{Id: winnerId})
+	winnerUser, err := ctx.Bot().
+		ChatMemberOf(ctx.Chat(), &types.IdRecipient{Id: winnerId})
 	if err != nil {
 		return ctx.Respond()
 	}
 
-	loserUser, err := ctx.Bot().ChatMemberOf(ctx.Chat(), &types.IdRecipient{Id: loserId})
+	loserUser, err := ctx.Bot().
+		ChatMemberOf(ctx.Chat(), &types.IdRecipient{Id: loserId})
 	if err != nil {
 		return ctx.Respond()
 	}
 
-	winnerName := strings.Join([]string{winnerUser.User.FirstName, winnerUser.User.LastName}, " ")
-	loserName := strings.Join([]string{loserUser.User.FirstName, loserUser.User.LastName}, " ")
+	winnerName := strings.Join(
+		[]string{winnerUser.User.FirstName, winnerUser.User.LastName},
+		" ",
+	)
+	loserName := strings.Join(
+		[]string{loserUser.User.FirstName, loserUser.User.LastName},
+		" ",
+	)
 
-	messageText := fmt.Sprintf("🤠 %v wins! 🤠 %v loses! ⚔️", winnerName, loserName)
+	messageText := fmt.Sprintf(
+		"🤠 %v wins! 🤠 %v loses! ⚔️",
+		winnerName,
+		loserName,
+	)
 
-	_, err = ctx.Bot().Edit(ctx.Callback(), "⚔️"+phrases.Random(), &telebot.ReplyMarkup{})
+	_, err = ctx.Bot().
+		Edit(ctx.Callback(), "⚔️"+phrases.Random(), &telebot.ReplyMarkup{})
 	if err != nil {
 		return ctx.Respond()
 	}
@@ -87,7 +104,10 @@ func DuelCallbackHandler(ctx telebot.Context) error {
 		user.Set(winnerUser.User.ID, 0)
 
 		err := ctx.Reply(
-			fmt.Sprintf("Looks like %v win 3 times in a row! Giving him x3 mute!", winnerName),
+			fmt.Sprintf(
+				"Looks like %v win 3 times in a row! Giving him x3 mute!",
+				winnerName,
+			),
 		)
 		if err != nil {
 			return ctx.Respond()
@@ -143,10 +163,12 @@ func DuelCallbackHandler(ctx telebot.Context) error {
 		}
 
 		if !me.CanRestrictMembers {
-			return ctx.Reply("Bot is not an admin. Change mode or give rights to restrict members!")
+			return ctx.Reply(
+				"Bot is not an admin. Change mode or give rights to restrict members!",
+			)
 		}
 
-		loserUser.RestrictedUntil = time.Now().Add(time.Minute * 10).Unix()
+		loserUser.RestrictedUntil = time.Now().Add(time.Minute * 5).Unix()
 		loserUser.CanSendMessages = false
 
 		err = ctx.Bot().Restrict(ctx.Chat(), loserUser)
@@ -155,13 +177,46 @@ func DuelCallbackHandler(ctx telebot.Context) error {
 		}
 
 		if winInRow {
-			winnerUser.RestrictedUntil = time.Now().Add(time.Minute * 30).Unix()
+			winnerUser.RestrictedUntil = time.Now().Add(time.Minute * 15).Unix()
 			winnerUser.CanSendMessages = false
 
 			err := ctx.Bot().Restrict(ctx.Chat(), winnerUser)
 			if err != nil {
 				return ctx.Respond()
 			}
+		}
+
+	case "USER":
+		client := ctx.Get("client").(*tdapi.Client)
+		until := time.Now().Add(time.Minute * 5)
+		if winInRow {
+			until = time.Now().Add(time.Minute * 15)
+		}
+
+		channel, err := client.Peers.ResolveChannelID(
+			context.Background(),
+			ctx.Chat().ID,
+		)
+		if err != nil {
+			return ctx.Respond()
+		}
+
+		loser, err := client.Peers.ResolveUserID(context.Background(), loserId)
+		if err != nil {
+			return ctx.Respond()
+		}
+
+		_, err = client.Telegram.API().
+			ChannelsEditBanned(context.Background(), &tg.ChannelsEditBannedRequest{
+				Channel:     channel.InputChannel(),
+				Participant: loser.InputPeer(),
+				BannedRights: tg.ChatBannedRights{
+					SendMessages: true,
+					UntilDate:    int(until.Unix()),
+				},
+			})
+		if err != nil {
+			return err
 		}
 	}
 
