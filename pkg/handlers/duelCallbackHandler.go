@@ -1,16 +1,12 @@
 package handlers
 
 import (
-	"context"
 	"fmt"
 	"math/rand"
 	"os"
 	"strconv"
 	"strings"
 	"time"
-
-	"github.com/gotd/td/tg"
-	"github.com/xbt573/duelbot/pkg/tdapi"
 
 	"github.com/xbt573/duelbot/pkg/phrases"
 	"github.com/xbt573/duelbot/pkg/types"
@@ -194,39 +190,6 @@ func DuelCallbackHandler(ctx telebot.Context) error {
 			if err != nil {
 				return ctx.Respond()
 			}
-		}
-
-	case "USER":
-		client := ctx.Get("client").(*tdapi.Client)
-		until := time.Now().Add(time.Minute * 5)
-		if winInRow {
-			until = time.Now().Add(time.Minute * 15)
-		}
-
-		channel, err := client.Peers.ResolveChannelID(
-			context.Background(),
-			ctx.Chat().ID,
-		)
-		if err != nil {
-			return ctx.Respond()
-		}
-
-		winner, err := client.Peers.ResolveUserID(context.Background(), winnerId)
-		if err != nil {
-			return ctx.Respond()
-		}
-
-		_, err = client.Telegram.API().
-			ChannelsEditBanned(context.Background(), &tg.ChannelsEditBannedRequest{
-				Channel:     channel.InputChannel(),
-				Participant: winner.InputPeer(),
-				BannedRights: tg.ChatBannedRights{
-					SendMessages: true,
-					UntilDate:    int(until.Unix()),
-				},
-			})
-		if err != nil {
-			return ctx.Respond()
 		}
 	}
 
