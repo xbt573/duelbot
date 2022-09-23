@@ -168,7 +168,12 @@ func DuelCallbackHandler(ctx telebot.Context) error {
 			)
 		}
 
-		loserUser.RestrictedUntil = time.Now().Add(time.Minute * 5).Unix()
+		until := time.Now().Add(time.Minute * 5)
+		if !loserUser.CanSendMedia {
+			until = time.Unix(loserUser.RestrictedUntil, 0).Add(time.Minute * 5)
+		}
+
+		loserUser.RestrictedUntil = until.Unix()
 		loserUser.CanSendMessages = false
 
 		err = ctx.Bot().Restrict(ctx.Chat(), loserUser)
@@ -177,7 +182,12 @@ func DuelCallbackHandler(ctx telebot.Context) error {
 		}
 
 		if winInRow {
-			winnerUser.RestrictedUntil = time.Now().Add(time.Minute * 15).Unix()
+			until := time.Now().Add(time.Minute * 15)
+			if !winnerUser.CanSendMessages {
+				until = time.Unix(winnerUser.RestrictedUntil, 0).Add(time.Minute * 15)
+			}
+
+			winnerUser.RestrictedUntil = until.Unix()
 			winnerUser.CanSendMessages = false
 
 			err := ctx.Bot().Restrict(ctx.Chat(), winnerUser)
