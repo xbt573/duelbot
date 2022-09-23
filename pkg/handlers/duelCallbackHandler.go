@@ -201,7 +201,7 @@ func DuelCallbackHandler(ctx telebot.Context) error {
 			return ctx.Respond()
 		}
 
-		loser, err := client.Peers.ResolveUserID(context.Background(), loserId)
+		winner, err := client.Peers.ResolveUserID(context.Background(), winnerId)
 		if err != nil {
 			return ctx.Respond()
 		}
@@ -209,14 +209,14 @@ func DuelCallbackHandler(ctx telebot.Context) error {
 		_, err = client.Telegram.API().
 			ChannelsEditBanned(context.Background(), &tg.ChannelsEditBannedRequest{
 				Channel:     channel.InputChannel(),
-				Participant: loser.InputPeer(),
+				Participant: winner.InputPeer(),
 				BannedRights: tg.ChatBannedRights{
 					SendMessages: true,
 					UntilDate:    int(until.Unix()),
 				},
 			})
 		if err != nil {
-			return err
+			return ctx.Respond()
 		}
 	}
 
