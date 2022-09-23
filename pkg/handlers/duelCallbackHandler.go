@@ -165,7 +165,7 @@ func DuelCallbackHandler(ctx telebot.Context) error {
 		}
 
 		until := time.Now().Add(time.Minute * 5)
-		if !loserUser.CanSendMedia {
+		if loserUser.RestrictedUntil != 0 {
 			until = time.Unix(loserUser.RestrictedUntil, 0).Add(time.Minute * 5)
 		}
 
