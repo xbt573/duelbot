@@ -25,5 +25,7 @@ func Route(bot *telebot.Bot) {
 	bot.Handle("/start", StartHandler)
 	bot.Handle("/help", HelpHandler)
 	bot.Handle("/duel", DuelHandler)
+	bot.Handle("/suicide", SuicideHandler)
+	bot.Handle("/rm", RemoveHandler)
 	bot.Handle(telebot.OnCallback, DuelCallbackHandler)
 }
